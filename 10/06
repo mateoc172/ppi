@@ -1,0 +1,262 @@
+// ============================================================
+//  EduGestión – Funciones de lectura por tabla
+//  Supabase JavaScript Client
+// ============================================================
+
+import { createClient } from '@supabase/supabase-js'
+
+const SUPABASE_URL = 'https://TU_PROYECTO.supabase.co'
+const SUPABASE_KEY = 'TU_ANON_KEY'
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+
+// ============================================================
+// 1. PADRE
+// ============================================================
+async function obtenerPadres() {
+    const { data, error } = await supabase
+        .from('padre')
+        .select('*')
+        .order('id_padre', { ascending: true })
+
+    if (error) {
+        console.error('Error al obtener padres:', error.message)
+        return null
+    }
+    console.log('Padres:', data)
+    return data
+}
+
+
+// ============================================================
+// 2. DOCENTE
+// ============================================================
+async function obtenerDocentes() {
+    const { data, error } = await supabase
+        .from('docente')
+        .select('id_docente, nombre, correo, asignatura')
+        .order('nombre', { ascending: true })
+
+    if (error) {
+        console.error('Error al obtener docentes:', error.message)
+        return null
+    }
+    console.log('Docentes:', data)
+    return data
+}
+
+
+// ============================================================
+// 3. DIRECTIVO
+// ============================================================
+async function obtenerDirectivos() {
+    const { data, error } = await supabase
+        .from('directivo')
+        .select('id_directivo, nombre, correo, cargo')
+        .order('id_directivo', { ascending: true })
+
+    if (error) {
+        console.error('Error al obtener directivos:', error.message)
+        return null
+    }
+    console.log('Directivos:', data)
+    return data
+}
+
+
+// ============================================================
+// 4. ESTUDIANTE  (trae también el nombre del padre)
+// ============================================================
+async function obtenerEstudiantes() {
+    const { data, error } = await supabase
+        .from('estudiante')
+        .select(`
+            id_estudiante,
+            nombre,
+            correo,
+            grado,
+            padre ( nombre )
+        `)
+        .order('grado', { ascending: true })
+
+    if (error) {
+        console.error('Error al obtener estudiantes:', error.message)
+        return null
+    }
+    console.log('Estudiantes:', data)
+    return data
+}
+
+
+// ============================================================
+// 5. ACTIVIDAD
+// ============================================================
+async function obtenerActividades() {
+    const { data, error } = await supabase
+        .from('actividad')
+        .select(`
+            id_actividad,
+            nombre,
+            descripcion,
+            horas_requeridas,
+            fecha_inicio,
+            fecha_fin,
+            docente ( nombre )
+        `)
+        .order('fecha_inicio', { ascending: true })
+
+    if (error) {
+        console.error('Error al obtener actividades:', error.message)
+        return null
+    }
+    console.log('Actividades:', data)
+    return data
+}
+
+
+// ============================================================
+// 6. REGISTRO  (trae estudiante y docente relacionados)
+// ============================================================
+async function obtenerRegistros() {
+    const { data, error } = await supabase
+        .from('registro')
+        .select(`
+            id_registro,
+            fecha,
+            hora_inicio,
+            hora_termino,
+            horas_dia,
+            descripcion_actividad,
+            estado,
+            observacion_docente,
+            estudiante ( nombre, grado ),
+            docente    ( nombre ),
+            directivo  ( nombre )
+        `)
+        .order('fecha', { ascending: false })
+
+    if (error) {
+        console.error('Error al obtener registros:', error.message)
+        return null
+    }
+    console.log('Registros:', data)
+    return data
+}
+
+
+// ============================================================
+// 7. EVIDENCIA
+// ============================================================
+async function obtenerEvidencias() {
+    const { data, error } = await supabase
+        .from('evidencia')
+        .select('id_evidencia, id_registro, tipo_archivo, url_archivo, fecha_carga')
+        .order('id_registro', { ascending: true })
+
+    if (error) {
+        console.error('Error al obtener evidencias:', error.message)
+        return null
+    }
+    console.log('Evidencias:', data)
+    return data
+}
+
+
+// ============================================================
+// 8. REPORTE FINAL  (trae nombre del estudiante y directivo)
+// ============================================================
+async function obtenerReportesFinal() {
+    const { data, error } = await supabase
+        .from('reporte_final')
+        .select(`
+            id_reporte,
+            total_horas,
+            aprobacion,
+            fecha_generacion,
+            observaciones,
+            firma_digital,
+            estudiante ( nombre, grado ),
+            directivo  ( nombre, cargo )
+        `)
+        .order('aprobacion', { ascending: false })
+
+    if (error) {
+        console.error('Error al obtener reportes finales:', error.message)
+        return null
+    }
+    console.log('Reportes finales:', data)
+    return data
+}
+
+
+// ============================================================
+// 9. NOTIFICACIÓN
+// ============================================================
+async function obtenerNotificaciones() {
+    const { data, error } = await supabase
+        .from('notificacion')
+        .select('id_notificacion, id_usuario, tipo_usuario, mensaje, fecha_envio, leida')
+        .order('fecha_envio', { ascending: false })
+
+    if (error) {
+        console.error('Error al obtener notificaciones:', error.message)
+        return null
+    }
+    console.log('Notificaciones:', data)
+    return data
+}
+
+
+// ============================================================
+// LLAMAR TODAS LAS FUNCIONES DE UNA VEZ (opcional)
+// ============================================================
+async function obtenerTodo() {
+    const [
+        padres,
+        docentes,
+        directivos,
+        estudiantes,
+        actividades,
+        registros,
+        evidencias,
+        reportes,
+        notificaciones
+    ] = await Promise.all([
+        obtenerPadres(),
+        obtenerDocentes(),
+        obtenerDirectivos(),
+        obtenerEstudiantes(),
+        obtenerActividades(),
+        obtenerRegistros(),
+        obtenerEvidencias(),
+        obtenerReportesFinal(),
+        obtenerNotificaciones()
+    ])
+
+    return {
+        padres,
+        docentes,
+        directivos,
+        estudiantes,
+        actividades,
+        registros,
+        evidencias,
+        reportes,
+        notificaciones
+    }
+}
+
+
+export {
+    obtenerPadres,
+    obtenerDocentes,
+    obtenerDirectivos,
+    obtenerEstudiantes,
+    obtenerActividades,
+    obtenerRegistros,
+    obtenerEvidencias,
+    obtenerReportesFinal,
+    obtenerNotificaciones,
+    obtenerTodo
+}
