@@ -1,5 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
+import Header from './components/Header.jsx'
+import SectionContent from './components/SectionContent.jsx'
+import Sidebar from './components/Sidebar.jsx'
 import './App.css'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
@@ -12,6 +15,15 @@ const supabase =
     ? createClient(supabaseUrl, supabaseAnonKey)
     : null
 
+const sections = [
+  { key: 'inicio', label: 'Inicio' },
+  { key: 'registro', label: 'Registro de horas' },
+  { key: 'evidencias', label: 'Evidencias' },
+  { key: 'reportes', label: 'Reportes' },
+  { key: 'usuarios', label: 'Usuarios' },
+  { key: 'perfil', label: 'Perfil' },
+]
+
 function App() {
   const [isLogin, setIsLogin] = useState(true)
   const [formData, setFormData] = useState({
@@ -22,6 +34,25 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [isSuccess, setIsSuccess] = useState(false)
+  const [user, setUser] = useState(null)
+  const [activeSection, setActiveSection] = useState('inicio')
+
+  useEffect(() => {
+    if (!supabase) return
+
+    const session = supabase.auth.getSession().then(({ data }) => {
+      const sessionData = data.session
+      if (sessionData?.user) {
+        setUser({ email: sessionData.user.email })
+      }
+    })
+
+    return () => {
+      if (session?.unsubscribe) {
+        session.unsubscribe()
+      }
+    }
+  }, [])
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -42,15 +73,17 @@ function App() {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email: formData.email,
           password: formData.password,
         })
 
         if (error) throw error
 
+        setUser({ email: formData.email })
         setMessage('Inicio de sesión correcto.')
         setIsSuccess(true)
+        setActiveSection('inicio')
       } else {
         const { data, error } = await supabase.auth.signUp({
           email: formData.email,
@@ -67,7 +100,7 @@ function App() {
         if (data?.user && !data.session) {
           setMessage('Registro enviado. Revisa tu correo para confirmar la cuenta.')
         } else {
-          setMessage('Registro correcto.')
+          setMessage('Registro correcto. Ya puedes iniciar sesión.')
         }
 
         setIsSuccess(true)
@@ -79,94 +112,117 @@ function App() {
     }
   }
 
-  return (
-    <div className="auth-shell">
-      <div className="auth-card shadow-sm">
-        <div className="auth-toggle" role="tablist" aria-label="Autenticación">
-          <button
-            type="button"
-            className={`auth-toggle__button ${isLogin ? 'active' : ''}`}
-            onClick={() => setIsLogin(true)}
-          >
-            Iniciar sesión
-          </button>
-          <button
-            type="button"
-            className={`auth-toggle__button ${!isLogin ? 'active' : ''}`}
-            onClick={() => setIsLogin(false)}
-          >
-            Registro
-          </button>
-        </div>
+  const handleLogout = async () => {
+    if (!supabase) return
+    await supabase.auth.signOut()
+    setUser(null)
+    setIsLogin(true)
+    setMessage('Has cerrado sesión correctamente.')
+    setIsSuccess(true)
+  }
 
-        <h1 className="auth-title">{isLogin ? 'Bienvenido de nuevo' : 'Crea tu cuenta'}</h1>
-        <p className="auth-subtitle">
-          {isLogin
-            ? 'Accede con tu correo y contraseña.'
-            : 'Regístrate para empezar a usar la app.'}
-        </p>
+  if (!user) {
+    return (
+      <div className="auth-shell">
+        <div className="auth-card shadow-sm">
+          <div className="auth-toggle" role="tablist" aria-label="Autenticación">
+            <button
+              type="button"
+              className={`auth-toggle__button ${isLogin ? 'active' : ''}`}
+              onClick={() => setIsLogin(true)}
+            >
+              Iniciar sesión
+            </button>
+            <button
+              type="button"
+              className={`auth-toggle__button ${!isLogin ? 'active' : ''}`}
+              onClick={() => setIsLogin(false)}
+            >
+              Registro
+            </button>
+          </div>
 
-        <form onSubmit={handleSubmit} className="mt-4">
-          {!isLogin && (
+          <h1 className="auth-title">{isLogin ? 'Bienvenido de nuevo' : 'Crea tu cuenta'}</h1>
+          <p className="auth-subtitle">
+            {isLogin
+              ? 'Accede con tu correo y contraseña.'
+              : 'Regístrate para empezar a usar la app.'}
+          </p>
+
+          <form onSubmit={handleSubmit} className="mt-4">
+            {!isLogin && (
+              <div className="mb-3">
+                <label htmlFor="name" className="form-label">
+                  Nombre completo
+                </label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  className="form-control"
+                  placeholder="Tu nombre"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            )}
+
             <div className="mb-3">
-              <label htmlFor="name" className="form-label">
-                Nombre completo
+              <label htmlFor="email" className="form-label">
+                Correo electrónico
               </label>
               <input
-                id="name"
-                name="name"
-                type="text"
+                id="email"
+                name="email"
+                type="email"
                 className="form-control"
-                placeholder="Tu nombre"
-                value={formData.name}
+                placeholder="correo@ejemplo.com"
+                value={formData.email}
                 onChange={handleChange}
                 required
               />
             </div>
+
+            <div className="mb-3">
+              <label htmlFor="password" className="form-label">
+                Contraseña
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                className="form-control"
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+              {loading ? 'Procesando...' : isLogin ? 'Iniciar sesión' : 'Crear cuenta'}
+            </button>
+          </form>
+
+          {message && (
+            <div className={`alert mt-3 ${isSuccess ? 'alert-success' : 'alert-danger'}`}>
+              {message}
+            </div>
           )}
+        </div>
+      </div>
+    )
+  }
 
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">
-              Correo electrónico
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              className="form-control"
-              placeholder="correo@ejemplo.com"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">
-              Contraseña
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              className="form-control"
-              placeholder="••••••••"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <button type="submit" className="btn btn-primary w-100" disabled={loading}>
-            {loading ? 'Procesando...' : isLogin ? 'Iniciar sesión' : 'Crear cuenta'}
-          </button>
-        </form>
-
-        {message && (
-          <div className={`alert mt-3 ${isSuccess ? 'alert-success' : 'alert-danger'}`}>
-            {message}
-          </div>
-        )}
+  return (
+    <div className="app-shell">
+      <Header userEmail={user.email} onLogout={handleLogout} />
+      <div className="app-layout">
+        <Sidebar items={sections} currentSection={activeSection} onChangeSection={setActiveSection} />
+        <main className="app-main">
+          <SectionContent section={activeSection} />
+        </main>
       </div>
     </div>
   )
