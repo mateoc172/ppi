@@ -1,0 +1,81 @@
+MAPA SITIO
+
+MAPA COMPONENTES
+
+APP
+│
+├── Header
+│   └── Menú
+│
+├── Content
+│   ├── Productos (Secciones)
+│   │
+│   ├── Inicio
+│   │
+│   ├── Registro de horas
+│   │
+│   ├── Evidencias
+│   │
+│   ├── Reportes
+│   │
+│   ├── Usuarios
+│   │
+│   └── Perfil
+│   │
+│   └── Usuarios
+│       
+├── Estudiantes
+│       
+├── Docentes
+│       
+├── Padres de familia
+│       
+├── Directivos
+│       
+└── Admin
+│
+└── Footer
+
+ACCESO SOLO A:
+
+Docentes, Directivos y Admin
+
+• Ver reportes
+• Modificar registros
+• Aprobar horas
+• Generar informes
+
+MAPA SITIO
+
+Productos (Secciones)
+│
+├── Inicio
+├── Registro de horas
+├── Evidencias
+├── Reportes
+├── Usuarios
+└── Perfil
+
+Usuarios
+│
+├── Estudiantes
+├── Docentes
+├── Padres de familia
+├── Directivos
+└── Admin
+
+MAPA USUARIO
+
+Index
+│
+├── Registro
+├── Iniciar sesión
+├── Productos (Secciones)
+│   ├── Inicio
+│   ├── Registro de horas
+│   ├── Evidencias
+│   ├── Reportes
+│   ├── Usuarios
+│   └── Perfil
+│
+└── Perfil
