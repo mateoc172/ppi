@@ -6,13 +6,3 @@ export default function Registro() {
     </section>
   )
 }
-function Registro() {
-  return (
-    <section className="section-card">
-      <h2>Registro de horas</h2>
-      <p>En construcción — aquí se registrarán las jornadas y actividades.</p>
-    </section>
-  )
-}
-
-export default Registro
