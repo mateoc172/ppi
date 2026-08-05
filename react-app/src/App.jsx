@@ -216,8 +216,23 @@ function App() {
   }
 
   return (
-    <div className="app-shell">
+    <div className="app-shell app-shell--shiny">
       <Header userEmail={user.email} onLogout={handleLogout} />
+      <div className="app-topbar">
+        <div className="topbar-stat topbar-stat--primary">
+          <span>+52</span>
+          Proyectos activos
+        </div>
+        <div className="topbar-stat topbar-stat--accent">
+          <span>+120</span>
+          Registros hoy
+        </div>
+        <div className="topbar-stat topbar-stat--secondary">
+          <span>5</span>
+          Alertas pendientes
+        </div>
+      </div>
+
       <div className="app-layout">
         <Sidebar items={sections} currentSection={activeSection} onChangeSection={setActiveSection} />
         <main className="app-main">
