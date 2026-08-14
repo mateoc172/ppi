@@ -1,4 +1,9 @@
-function Sidebar({ items, currentSection, onChangeSection }) {
+function Sidebar({ sections, activeSection, setActiveSection, userRole, items, currentSection, onChangeSection }) {
+  // Compatibilidad con ambas interfaces
+  const displaySections = sections || items
+  const active = activeSection || currentSection
+  const handleChange = setActiveSection || onChangeSection
+
   return (
     <aside className="app-sidebar shadow-soft sidebar-card">
       <div className="sidebar-banner">
@@ -7,14 +12,15 @@ function Sidebar({ items, currentSection, onChangeSection }) {
       </div>
       <h2 className="sidebar-title">Secciones</h2>
       <nav className="sidebar-nav">
-        {items.map((item) => (
+        {displaySections.map((item) => (
           <button
             key={item.key}
             type="button"
-            className={`sidebar-item ${currentSection === item.key ? 'sidebar-item--active' : ''}`}
-            onClick={() => onChangeSection(item.key)}
+            className={`sidebar-item ${active === item.key ? 'sidebar-item--active' : ''}`}
+            onClick={() => handleChange(item.key)}
           >
-            {item.label}
+            <span className="sidebar-item-icon">{item.icon || '📄'}</span>
+            <span className="sidebar-item-label">{item.label}</span>
           </button>
         ))}
       </nav>

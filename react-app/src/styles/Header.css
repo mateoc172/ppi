@@ -1,0 +1,71 @@
+/* Estilos para el Header con rol */
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.app-brand {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.app-user {
+  font-size: 14px;
+  color: #666;
+  margin: 5px 0 0 0;
+}
+
+.app-user strong {
+  color: #333;
+}
+
+.user-role-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.user-role-badge .role-icon {
+  font-size: 16px;
+}
+
+.user-role-badge .role-name {
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px 20px;
+  }
+
+  .header-left {
+    width: 100%;
+    gap: 15px;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
