@@ -60,22 +60,42 @@
 
 .feature-card--blue {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  color: #000;
+}
+
+.feature-card--blue h3,
+.feature-card--blue p {
+  color: #000;
 }
 
 .feature-card--purple {
   background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  color: white;
+  color: #000;
+}
+
+.feature-card--purple h3,
+.feature-card--purple p {
+  color: #000;
 }
 
 .feature-card--green {
   background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  color: white;
+  color: #000;
+}
+
+.feature-card--green h3,
+.feature-card--green p {
+  color: #000;
 }
 
 .feature-card--orange {
   background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-  color: white;
+  color: #000;
+}
+
+.feature-card--orange h3,
+.feature-card--orange p {
+  color: #000;
 }
 
 @media (max-width: 768px) {
