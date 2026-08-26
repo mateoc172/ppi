@@ -1,3 +1,15 @@
+/**
+ * Renderiza la navegacion lateral y conserva compatibilidad con dos contratos de props.
+ *
+ * @param {Object} props Propiedades de navegacion.
+ * @param {Array<Object>} [props.sections] Secciones del contrato actual.
+ * @param {Array<Object>} [props.items] Secciones del contrato anterior.
+ * @param {string} [props.activeSection] Seccion activa actual.
+ * @param {string} [props.currentSection] Seccion activa del contrato anterior.
+ * @param {(section: string) => void} [props.setActiveSection] Cambio de seccion actual.
+ * @param {(section: string) => void} [props.onChangeSection] Cambio anterior.
+ * @returns {JSX.Element} Menu lateral con botones de seccion.
+ */
 function Sidebar({ sections, activeSection, setActiveSection, userRole, items, currentSection, onChangeSection }) {
   // Compatibilidad con ambas interfaces
   const displaySections = sections || items

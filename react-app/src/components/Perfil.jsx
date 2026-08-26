@@ -2,6 +2,15 @@ import { useState } from 'react'
 import { getRoleInfo } from '../config/roleConfig'
 import '../styles/Perfil.css'
 
+/**
+ * Presenta y actualiza los campos de perfil disponibles para el rol activo.
+ * Los datos se mantienen en el estado del formulario y la confirmacion es local.
+ *
+ * @param {Object} props Propiedades de la vista.
+ * @param {string} props.userRole Rol que define los campos mostrados.
+ * @param {Object} props.user Usuario autenticado usado para inicializar el correo.
+ * @returns {JSX.Element} Formulario de informacion personal y mensaje de resultado.
+ */
 export default function Perfil({ userRole, user }) {
   const [form, setForm] = useState({
     nombre: '',

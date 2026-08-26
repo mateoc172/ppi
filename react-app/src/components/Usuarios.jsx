@@ -4,6 +4,11 @@ const usuarios = [
   { id: 3, nombre: 'Carolina Díaz', rol: 'Directivo' },
 ]
 
+/**
+ * Lista los usuarios de ejemplo disponibles para la administracion basica.
+ *
+ * @returns {JSX.Element} Seccion con nombre y rol de cada usuario.
+ */
 export default function Usuarios() {
   return (
     <section className="section-card">

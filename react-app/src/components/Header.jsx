@@ -1,6 +1,16 @@
 import { getRoleInfo } from '../config/roleConfig'
 import '../styles/Header.css'
 
+/**
+ * Muestra la identidad de la sesion, el rol activo y la accion de cierre.
+ *
+ * @param {Object} props Propiedades del encabezado.
+ * @param {Object} props.user Usuario autenticado, si existe.
+ * @param {string} props.userRole Rol activo.
+ * @param {string} [props.userEmail] Correo alternativo para compatibilidad.
+ * @param {() => void} props.onLogout Funcion ejecutada al cerrar sesion.
+ * @returns {JSX.Element} Encabezado de la aplicacion.
+ */
 function Header({ user, userRole, userEmail, onLogout }) {
   const roleInfo = userRole ? getRoleInfo(userRole) : null
   const email = user?.email || userEmail

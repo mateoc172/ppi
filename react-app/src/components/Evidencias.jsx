@@ -100,6 +100,15 @@ const datosPadre = [
   },
 ]
 
+/**
+ * Gestiona la consulta de evidencias segun el rol y permite al estudiante
+ * cargar archivos locales junto con una descripcion para enviarlos a revision.
+ *
+ * @param {Object} props Propiedades de la vista.
+ * @param {string} props.userRole Rol que define los datos y acciones visibles.
+ * @param {Object} props.user Usuario autenticado, reservado para datos de la vista.
+ * @returns {JSX.Element} Formulario opcional y listado de evidencias.
+ */
 export default function Evidencias({ userRole, user }) {
   const [archivo, setArchivo] = useState(null)
   const [descripcion, setDescripcion] = useState('')

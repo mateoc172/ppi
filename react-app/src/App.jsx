@@ -69,6 +69,12 @@ const sections = [
   { key: 'perfil', label: 'Perfil' },
 ]
 
+/**
+ * Controla la autenticacion, la sesion local o Supabase y la navegacion principal.
+ * Mantiene el usuario y el rol en localStorage para restaurarlos al recargar la app.
+ *
+ * @returns {JSX.Element} Pantalla de autenticacion, selector de rol o dashboard.
+ */
 function App() {
   const [isLogin, setIsLogin] = useState(true)
   const [formData, setFormData] = useState({

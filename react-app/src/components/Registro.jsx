@@ -1,5 +1,11 @@
 import { useState } from 'react'
 
+/**
+ * Registra una jornada de servicio con fecha, horario y actividades realizadas.
+ * Valida que todos los campos tengan contenido antes de mostrar la confirmacion.
+ *
+ * @returns {JSX.Element} Formulario controlado para guardar horas.
+ */
 export default function Registro() {
   const [form, setForm] = useState({
     fecha: '',

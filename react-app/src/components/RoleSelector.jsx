@@ -7,6 +7,14 @@ const ROLES = [
   { id: 'padre', label: 'Padre de Familia', icon: '👨‍👩‍👧', color: '#fd7e14' },
 ]
 
+/**
+ * Permite seleccionar el rol que se usara para construir el dashboard.
+ *
+ * @param {Object} props Propiedades del selector.
+ * @param {(role: string) => void} props.onRoleSelect Funcion llamada con el id elegido.
+ * @param {string|null} props.selectedRole Id del rol actualmente seleccionado.
+ * @returns {JSX.Element} Opciones de rol y confirmacion de la seleccion.
+ */
 export default function RoleSelector({ onRoleSelect, selectedRole }) {
   return (
     <div className="role-selector-container">

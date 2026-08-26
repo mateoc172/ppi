@@ -5,6 +5,15 @@ import SectionContent from './SectionContent'
 import Sidebar from './Sidebar'
 import '../styles/Dashboard.css'
 
+/**
+ * Ensambla el encabezado, la navegacion lateral y el contenido del rol activo.
+ *
+ * @param {Object} props Propiedades del dashboard.
+ * @param {Object} props.user Usuario autenticado.
+ * @param {string} props.userRole Rol seleccionado por el usuario.
+ * @param {() => void} props.onLogout Funcion que cierra la sesion.
+ * @returns {JSX.Element} Panel principal o mensaje de rol invalido.
+ */
 export default function Dashboard({ user, userRole, onLogout }) {
   const [activeSection, setActiveSection] = useState('inicio')
   const sections = getSectionsByRole(userRole)

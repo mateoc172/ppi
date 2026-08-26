@@ -1,4 +1,4 @@
-// Configuración de roles y permisos
+/** Configuracion central de roles, secciones visibles y permisos de la aplicacion. */
 export const ROLE_PERMISSIONS = {
   estudiante: {
     label: 'Estudiante',
@@ -91,17 +91,33 @@ export const ROLE_PERMISSIONS = {
   },
 }
 
-// Función para verificar si un rol tiene permiso
+/**
+ * Comprueba si un rol tiene un permiso especifico.
+ *
+ * @param {string} role Identificador del rol.
+ * @param {string} permission Nombre del permiso.
+ * @returns {boolean} true cuando el permiso esta habilitado.
+ */
 export const hasPermission = (role, permission) => {
   return ROLE_PERMISSIONS[role]?.permissions[permission] || false
 }
 
-// Función para obtener secciones disponibles para un rol
+/**
+ * Obtiene las secciones de navegacion disponibles para un rol.
+ *
+ * @param {string} role Identificador del rol.
+ * @returns {Array<Object>} Secciones configuradas o un arreglo vacio.
+ */
 export const getSectionsByRole = (role) => {
   return ROLE_PERMISSIONS[role]?.sections || []
 }
 
-// Función para obtener la información del rol
+/**
+ * Obtiene la configuracion completa de un rol.
+ *
+ * @param {string} role Identificador del rol.
+ * @returns {Object|null} Informacion del rol o null si no existe.
+ */
 export const getRoleInfo = (role) => {
   return ROLE_PERMISSIONS[role] || null
 }

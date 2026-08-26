@@ -61,6 +61,15 @@ const datosPadre = [
   { id: 3, materia: 'Ciencias', calificacion: 3.8, observaciones: 'Necesita refuerzo' },
 ]
 
+/**
+ * Muestra reportes y resumenes calculados de acuerdo con el rol del usuario.
+ * Para estudiantes calcula horas aprobadas, rechazadas y porcentaje de avance.
+ *
+ * @param {Object} props Propiedades del reporte.
+ * @param {string} props.userRole Rol que selecciona el conjunto de datos.
+ * @param {Object} props.user Usuario autenticado, reservado para futuras consultas.
+ * @returns {JSX.Element} Reporte con tarjetas, progreso y resumen.
+ */
 export default function Reportes({ userRole, user }) {
   const reportesPorRol = {
     estudiante: {

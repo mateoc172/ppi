@@ -2,6 +2,14 @@ import heroImage from '../assets/hero.png'
 import { getRoleInfo } from '../config/roleConfig'
 import '../styles/Inicio.css'
 
+/**
+ * Presenta el resumen de bienvenida y las funciones disponibles para cada rol.
+ *
+ * @param {Object} props Propiedades de la pantalla de inicio.
+ * @param {string} props.userRole Rol que determina el contenido mostrado.
+ * @param {Object} props.user Usuario autenticado recibido por el dashboard.
+ * @returns {JSX.Element} Panel de bienvenida con funciones y referencia visual.
+ */
 export default function Inicio({ userRole, user }) {
   const roleInfo = getRoleInfo(userRole)
 
