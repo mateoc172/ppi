@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { getRoleInfo } from '../config/roleConfig'
+import { supabase } from '../config/supabase'
 import '../styles/Evidencias.css'
 
 const datosEstudiante = [
@@ -114,20 +115,91 @@ export default function Evidencias({ userRole, user }) {
   const [descripcion, setDescripcion] = useState('')
   const [lista, setLista] = useState([])
   const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
   const roleInfo = getRoleInfo(userRole)
 
-  const handleSubmit = (event) => {
+  useEffect(() => {
+    const cargarEvidencias = async () => {
+      if (!supabase) return
+
+      const { data: authData } = await supabase.auth.getUser()
+      const userId = authData.user?.id
+      if (!userId) return
+
+      const { data, error } = await supabase
+        .from('evidencias')
+        .select('id, nombre_archivo, descripcion, estado, url_archivo, created_at')
+        .eq('usuario_id', userId)
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        setMessage(`No se pudieron cargar las evidencias: ${error.message}`)
+        return
+      }
+
+      setLista((data || []).map((item) => ({
+        id: item.id,
+        nombre: item.nombre_archivo,
+        descripcion: item.descripcion,
+        estado: item.estado,
+        url: item.url_archivo,
+      })))
+    }
+
+    cargarEvidencias()
+  }, [])
+
+  const handleSubmit = async (event) => {
     event.preventDefault()
     if (!archivo || !descripcion) return
 
-    setLista((prev) => [
-      ...prev,
-      { id: Date.now(), nombre: archivo.name, descripcion, estado: 'Pendiente' },
-    ])
-    setMessage('✅ Evidencia subida correctamente y enviada a revisión.')
-    setArchivo(null)
-    setDescripcion('')
-    setTimeout(() => setMessage(''), 3000)
+    if (!supabase) {
+      setMessage('Supabase no está configurado.')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const { data: authData } = await supabase.auth.getUser()
+      const userId = authData.user?.id
+      if (!userId) throw new Error('Tu sesión no está disponible. Inicia sesión nuevamente.')
+
+      const path = `${userId}/${Date.now()}-${archivo.name}`
+      const { error: uploadError } = await supabase.storage
+        .from('evidencias')
+        .upload(path, archivo, { upsert: false })
+      if (uploadError) throw uploadError
+
+      const { data: urlData } = supabase.storage.from('evidencias').getPublicUrl(path)
+      const { data, error } = await supabase
+        .from('evidencias')
+        .insert({
+          usuario_id: userId,
+          nombre_archivo: archivo.name,
+          descripcion,
+          url_archivo: urlData.publicUrl,
+        })
+        .select('id, nombre_archivo, descripcion, estado, url_archivo')
+        .single()
+      if (error) throw error
+
+      setLista((prev) => [
+        { id: data.id, nombre: data.nombre_archivo, descripcion: data.descripcion, estado: data.estado, url: data.url_archivo },
+        ...prev,
+      ])
+      setMessage('Evidencia subida correctamente y enviada a revisión.')
+      setArchivo(null)
+      setDescripcion('')
+    } catch (error) {
+      const message = error.message === 'Bucket not found'
+        ? 'Primero crea el bucket evidencias en Supabase Storage o ejecuta supabase-schema.sql.'
+        : error.message?.includes('row-level security')
+          ? 'Supabase bloqueó la subida. Ejecuta nuevamente las políticas de Storage de supabase-schema.sql.'
+        : `No se pudo guardar la evidencia: ${error.message}`
+      setMessage(message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const contenidoPorRol = {
@@ -357,8 +429,8 @@ export default function Evidencias({ userRole, user }) {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary btn-submit">
-            📤 Subir evidencia
+          <button type="submit" className="btn btn-primary btn-submit" disabled={loading}>
+            {loading ? 'Guardando...' : '📤 Subir evidencia'}
           </button>
         </form>
       )}
@@ -375,7 +447,7 @@ export default function Evidencias({ userRole, user }) {
 
       {lista.length > 0 && (
         <div className="local-uploads mt-4">
-          <h3>📤 Tus envíos locales (sin guardar)</h3>
+          <h3>📤 Tus evidencias guardadas</h3>
           <div className="uploads-list">
             {lista.map((item) => (
               <div key={item.id} className="upload-item">

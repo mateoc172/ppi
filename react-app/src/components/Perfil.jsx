@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { getRoleInfo } from '../config/roleConfig'
+import { supabase } from '../config/supabase'
 import '../styles/Perfil.css'
 
 /**
@@ -23,14 +24,52 @@ export default function Perfil({ userRole, user }) {
   const [message, setMessage] = useState('')
   const roleInfo = getRoleInfo(userRole)
 
+  useEffect(() => {
+    const cargarPerfil = async () => {
+      if (!supabase) return
+
+      const { data: authData } = await supabase.auth.getUser()
+      const userId = authData.user?.id
+      if (!userId) return
+
+      const { data, error } = await supabase
+        .from('perfiles')
+        .select('nombre, correo, telefono, direccion, institucion, departamento')
+        .eq('id', userId)
+        .maybeSingle()
+
+      if (error) {
+        setMessage(`No se pudo cargar el perfil: ${error.message}`)
+        return
+      }
+
+      if (data) setForm((prev) => ({ ...prev, ...data }))
+    }
+
+    cargarPerfil()
+  }, [])
+
   const handleChange = (event) => {
     const { name, value } = event.target
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
-    setMessage('Perfil actualizado correctamente.')
+    if (!supabase) {
+      setMessage('Supabase no está configurado.')
+      return
+    }
+
+    const { data: authData } = await supabase.auth.getUser()
+    const userId = authData.user?.id
+    if (!userId) {
+      setMessage('Tu sesión no está disponible. Inicia sesión nuevamente.')
+      return
+    }
+
+    const { error } = await supabase.from('perfiles').upsert({ id: userId, ...form })
+    setMessage(error ? `No se pudo actualizar el perfil: ${error.message}` : 'Perfil actualizado correctamente.')
     setTimeout(() => setMessage(''), 3000)
   }
 

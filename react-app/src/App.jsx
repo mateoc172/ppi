@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react'
-import { createClient } from '@supabase/supabase-js'
 import Header from './components/Header.jsx'
 import SectionContent from './components/SectionContent.jsx'
 import Sidebar from './components/Sidebar.jsx'
 import RoleSelector from './components/RoleSelector.jsx'
 import Dashboard from './components/Dashboard.jsx'
 import { getSectionsByRole } from './config/roleConfig'
+import { supabase } from './config/supabase'
 import './App.css'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 const localUserKey = 'ppi-demo-user'
 const localUserRoleKey = 'ppi-demo-user-role'
 const localUsersKey = 'ppi-demo-users'
@@ -53,13 +51,6 @@ const clearUserRole = () => {
   localStorage.removeItem(localUserRoleKey)
 }
 
-const supabase =
-  supabaseUrl &&
-  supabaseAnonKey &&
-  supabaseUrl !== 'https://tu-proyecto.supabase.co'
-    ? createClient(supabaseUrl, supabaseAnonKey)
-    : null
-
 const sections = [
   { key: 'inicio', label: 'Inicio' },
   { key: 'registro', label: 'Registro de horas' },
@@ -96,18 +87,15 @@ function App() {
   useEffect(() => {
     if (!supabase) return
 
-    const session = supabase.auth.getSession().then(({ data }) => {
-      const sessionData = data.session
-      if (sessionData?.user) {
-        setUser({ email: sessionData.user.email })
-      }
-    })
+    const loadSession = async () => {
+      const { data, error } = await supabase.auth.getSession()
+      if (error) return
 
-    return () => {
-      if (session?.unsubscribe) {
-        session.unsubscribe()
-      }
+      const sessionData = data.session
+      if (sessionData?.user) setUser({ email: sessionData.user.email })
     }
+
+    loadSession().catch(() => {})
   }, [])
 
   const handleChange = (event) => {
