@@ -12,9 +12,10 @@ import '../styles/Dashboard.css'
  * @param {Object} props.user Usuario autenticado.
  * @param {string} props.userRole Rol seleccionado por el usuario.
  * @param {() => void} props.onLogout Funcion que cierra la sesion.
+ * @param {() => void} props.onChangeRole Funcion que vuelve al selector de rol.
  * @returns {JSX.Element} Panel principal o mensaje de rol invalido.
  */
-export default function Dashboard({ user, userRole, onLogout }) {
+export default function Dashboard({ user, userRole, onLogout, onChangeRole }) {
   const [activeSection, setActiveSection] = useState('inicio')
   const sections = getSectionsByRole(userRole)
   const roleInfo = getRoleInfo(userRole)
@@ -25,7 +26,12 @@ export default function Dashboard({ user, userRole, onLogout }) {
 
   return (
     <div className="dashboard-container">
-      <Header user={user} userRole={userRole} onLogout={onLogout} />
+      <Header
+        user={user}
+        userRole={userRole}
+        onLogout={onLogout}
+        onChangeRole={onChangeRole}
+      />
       <div className="dashboard-content">
         <Sidebar
           sections={sections}

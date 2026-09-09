@@ -199,6 +199,12 @@ export default function Reportes({ userRole, user }) {
   const horasRechazadas = userRole === 'estudiante'
     ? reporte.datos.filter(item => item.estado === 'Rechazado').reduce((total, item) => total + item.horas, 0)
     : 0
+  const horasFaltantes = userRole === 'estudiante' ? Math.max(0, 80 - horasAprobadas) : 0
+  const horasDistribuidas = horasAprobadas + horasRechazadas + horasFaltantes
+  const porcentajeAprobadas = horasDistribuidas ? (horasAprobadas / horasDistribuidas) * 100 : 0
+  const porcentajeRechazadas = horasDistribuidas
+    ? ((horasAprobadas + horasRechazadas) / horasDistribuidas) * 100
+    : 0
   const porcentajeCompleto = userRole === 'estudiante' ? (horasAprobadas / 80) * 100 : 0
 
   return (
@@ -230,6 +236,26 @@ export default function Reportes({ userRole, user }) {
       <div className="reportes-summary">
         {userRole === 'estudiante' ? (
           <>
+            <div className="hours-chart" aria-label="Distribución de horas aprobadas, rechazadas y faltantes">
+              <div
+                className="hours-chart__circle"
+                style={{
+                  '--approved-end': `${porcentajeAprobadas}%`,
+                  '--rejected-end': `${porcentajeRechazadas}%`,
+                }}
+              >
+                <div className="hours-chart__center">
+                  <strong>{porcentajeCompleto.toFixed(1)}%</strong>
+                  <span>completado</span>
+                </div>
+              </div>
+              <div className="hours-chart__legend">
+                <h3>Distribución de horas</h3>
+                <p><span className="legend-dot legend-dot--approved" />Aprobadas <strong>{horasAprobadas} hrs</strong></p>
+                <p><span className="legend-dot legend-dot--rejected" />Rechazadas <strong>{horasRechazadas} hrs</strong></p>
+                <p><span className="legend-dot legend-dot--missing" />Faltantes <strong>{horasFaltantes} hrs</strong></p>
+              </div>
+            </div>
             <div className="summary-stat status-aprobado">
               <span className="stat-icon">✓</span>
               <div>
@@ -248,7 +274,7 @@ export default function Reportes({ userRole, user }) {
               <span className="stat-icon">⏱️</span>
               <div>
                 <p className="stat-label">Horas Faltantes</p>
-                <p className="stat-value">{Math.max(0, 80 - horasAprobadas)} hrs</p>
+                <p className="stat-value">{horasFaltantes} hrs</p>
               </div>
             </div>
           </>

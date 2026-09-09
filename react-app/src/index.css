@@ -24,6 +24,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color-scheme: dark;
 
   @media (max-width: 1024px) {
     font-size: 16px;
@@ -52,6 +53,9 @@
 
 body {
   margin: 0;
+  background:
+    radial-gradient(circle at 8% 20%, rgba(244, 63, 94, 0.2), transparent 260px),
+    linear-gradient(135deg, #080d1b 0%, #172033 100%);
 }
 
 #root {
@@ -60,6 +64,7 @@ body {
   margin: 0 auto;
   text-align: center;
   border-inline: 1px solid var(--border);
+  background: #080d1b;
   min-height: 100svh;
   display: flex;
   flex-direction: column;

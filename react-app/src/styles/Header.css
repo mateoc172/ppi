@@ -18,18 +18,36 @@
 .app-brand {
   font-size: 18px;
   font-weight: 600;
-  color: #333;
+  color: #ffffff;
   margin: 0;
 }
 
 .app-user {
   font-size: 14px;
-  color: #666;
+  color: rgba(255, 255, 255, 0.9);
   margin: 5px 0 0 0;
 }
 
 .app-user strong {
-  color: #333;
+  color: #ffffff;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-back {
+  color: #000;
+  border-color: #000;
+}
+
+.btn-back:hover,
+.btn-back:focus {
+  color: #fff;
+  background-color: #000;
+  border-color: #000;
 }
 
 .user-role-badge {
@@ -67,5 +85,10 @@
 
   .btn {
     width: 100%;
+  }
+
+  .header-actions {
+    width: 100%;
+    flex-direction: column;
   }
 }

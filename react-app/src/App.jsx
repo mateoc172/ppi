@@ -110,6 +110,21 @@ function App() {
     setIsSuccess(false)
 
     try {
+      const isDemoLogin =
+        isLogin &&
+        formData.email === demoCredentials.email &&
+        formData.password === demoCredentials.password
+
+      if (isDemoLogin) {
+        const userData = { email: demoCredentials.email, name: 'Usuario demo' }
+        setUser(userData)
+        persistUser(userData)
+        setMessage('Inicio de sesión correcto.')
+        setIsSuccess(true)
+        setActiveSection('inicio')
+        return
+      }
+
       if (supabase) {
         try {
           if (isLogin) {
@@ -349,6 +364,7 @@ function App() {
       user={user} 
       userRole={userRole} 
       onLogout={handleLogout}
+      onChangeRole={handleChangeRole}
     />
   )
 }

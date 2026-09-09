@@ -9,9 +9,10 @@ import '../styles/Header.css'
  * @param {string} props.userRole Rol activo.
  * @param {string} [props.userEmail] Correo alternativo para compatibilidad.
  * @param {() => void} props.onLogout Funcion ejecutada al cerrar sesion.
+ * @param {() => void} [props.onChangeRole] Funcion para volver al selector de rol.
  * @returns {JSX.Element} Encabezado de la aplicacion.
  */
-function Header({ user, userRole, userEmail, onLogout }) {
+function Header({ user, userRole, userEmail, onLogout, onChangeRole }) {
   const roleInfo = userRole ? getRoleInfo(userRole) : null
   const email = user?.email || userEmail
 
@@ -29,9 +30,14 @@ function Header({ user, userRole, userEmail, onLogout }) {
           </div>
         )}
       </div>
-      <button type="button" className="btn btn-gradient" onClick={onLogout}>
-        Cerrar sesión
-      </button>
+      <div className="header-actions">
+        <button type="button" className="btn btn-back" onClick={onChangeRole}>
+          Regresar
+        </button>
+        <button type="button" className="btn btn-gradient" onClick={onLogout}>
+          Cerrar sesión
+        </button>
+      </div>
     </header>
   )
 }

@@ -1,4 +1,3 @@
-import heroImage from '../assets/hero.png'
 import { getRoleInfo } from '../config/roleConfig'
 import '../styles/Inicio.css'
 
@@ -88,27 +87,71 @@ export default function Inicio({ userRole, user }) {
             <p className="image-panel__tag">Referencia visual</p>
             <h3>Escenario educativo</h3>
           </div>
-          <span>Imagen de ejemplo</span>
         </div>
         <div className="image-panel__gallery">
           <div
             className="image-panel__thumb image-panel__thumb--large"
-            style={{ backgroundImage: `url(${heroImage})` }}
+            style={{
+              backgroundImage:
+                'url(https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=85)',
+            }}
             role="img"
-            aria-label="Escenario educativo"
+            aria-label="Personas participando en una clase"
           />
           <div
             className="image-panel__thumb image-panel__thumb--small"
-            style={{ backgroundImage: `url(${heroImage})` }}
+            style={{
+              backgroundImage:
+                'url(https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=900&q=85)',
+            }}
             role="img"
-            aria-label="Vista previa de referencia"
+            aria-label="Estudiante leyendo y aprendiendo"
           />
           <div
             className="image-panel__thumb image-panel__thumb--small"
-            style={{ backgroundImage: `url(${heroImage})` }}
+            style={{
+              backgroundImage:
+                'url(https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=85)',
+            }}
             role="img"
-            aria-label="Vista previa de referencia"
+            aria-label="Persona estudiando con recursos digitales"
           />
+        </div>
+      </div>
+
+      <div className="project-gallery">
+        <div className="project-gallery__header">
+          <div>
+            <p className="image-panel__tag">Nuestro proyecto</p>
+            <h3>Aprender también se construye en comunidad</h3>
+          </div>
+          <span>Actividades de alfabetización</span>
+        </div>
+        <div className="project-gallery__grid">
+          <figure className="project-gallery__item">
+            <img
+              src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=900&q=85"
+              alt="Estudiantes aprendiendo juntos en un aula"
+              loading="lazy"
+            />
+            <figcaption>Aprendizaje compartido</figcaption>
+          </figure>
+          <figure className="project-gallery__item">
+            <img
+              src="https://images.unsplash.com/photo-1529390079861-591de354faf5?auto=format&fit=crop&w=900&q=85"
+              alt="Grupo de jóvenes participando en una actividad educativa"
+              loading="lazy"
+            />
+            <figcaption>Participación activa</figcaption>
+          </figure>
+          <figure className="project-gallery__item">
+            <img
+              src="https://images.unsplash.com/photo-1494386346843-e12284507169?auto=format&fit=crop&w=900&q=85"
+              alt="Personas colaborando alrededor de una mesa de estudio"
+              loading="lazy"
+            />
+            <figcaption>Trabajo en comunidad</figcaption>
+          </figure>
         </div>
       </div>
     </section>
