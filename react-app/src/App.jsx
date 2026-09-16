@@ -1,10 +1,6 @@
 import { useEffect, useState } from 'react'
-import Header from './components/Header.jsx'
-import SectionContent from './components/SectionContent.jsx'
-import Sidebar from './components/Sidebar.jsx'
 import RoleSelector from './components/RoleSelector.jsx'
 import Dashboard from './components/Dashboard.jsx'
-import { getSectionsByRole } from './config/roleConfig'
 import { supabase } from './config/supabase'
 import './App.css'
 
@@ -43,26 +39,16 @@ const getStoredUserRole = () => {
   }
 }
 
-const saveUserRole = (role) => {
+const saveLocalUserRole = (role) => {
   localStorage.setItem(localUserRoleKey, role)
 }
 
-const clearUserRole = () => {
+const clearLocalUserRole = () => {
   localStorage.removeItem(localUserRoleKey)
 }
 
-const sections = [
-  { key: 'inicio', label: 'Inicio' },
-  { key: 'registro', label: 'Registro de horas' },
-  { key: 'evidencias', label: 'Evidencias' },
-  { key: 'reportes', label: 'Reportes' },
-  { key: 'usuarios', label: 'Usuarios' },
-  { key: 'perfil', label: 'Perfil' },
-]
-
 /**
- * Controla la autenticacion, la sesion local o Supabase y la navegacion principal.
- * Mantiene el usuario y el rol en localStorage para restaurarlos al recargar la app.
+ * Controla la autenticacion, la sesion de Supabase o el modo local de demo.
  *
  * @returns {JSX.Element} Pantalla de autenticacion, selector de rol o dashboard.
  */
@@ -77,22 +63,82 @@ function App() {
   const [message, setMessage] = useState('')
   const [isSuccess, setIsSuccess] = useState(false)
   const [user, setUser] = useState(() => getStoredUser())
-  const [userRole, setUserRole] = useState(() => getStoredUserRole())
+  const [userRole, setUserRole] = useState(() => (supabase ? null : getStoredUserRole()))
+  const [loadingSession, setLoadingSession] = useState(Boolean(supabase))
   const [activeSection, setActiveSection] = useState('inicio')
 
   const persistUser = (userData) => {
     localStorage.setItem(localUserKey, JSON.stringify(userData))
   }
 
+  const loadUserProfile = async (authUser) => {
+    const { data: profile, error } = await supabase
+      .from('perfiles')
+      .select('nombre, correo, rol')
+      .eq('id', authUser.id)
+      .maybeSingle()
+
+    if (error) throw error
+
+    if (profile) {
+      return {
+        user: {
+          id: authUser.id,
+          email: authUser.email,
+          name: profile.nombre,
+        },
+        role: profile.rol,
+      }
+    }
+
+    const { data: createdProfile, error: createError } = await supabase
+      .from('perfiles')
+      .insert({
+        id: authUser.id,
+        nombre: authUser.user_metadata?.full_name || '',
+        correo: authUser.email || '',
+        rol: 'estudiante',
+      })
+      .select('nombre, rol')
+      .single()
+
+    if (createError) throw createError
+
+    return {
+      user: {
+        id: authUser.id,
+        email: authUser.email,
+        name: createdProfile.nombre,
+      },
+      role: createdProfile.rol,
+    }
+  }
+
   useEffect(() => {
     if (!supabase) return
 
     const loadSession = async () => {
-      const { data, error } = await supabase.auth.getSession()
-      if (error) return
+      try {
+        const { data, error } = await supabase.auth.getSession()
+        if (error) throw error
 
-      const sessionData = data.session
-      if (sessionData?.user) setUser({ email: sessionData.user.email })
+        const sessionUser = data.session?.user
+        if (!sessionUser) {
+          setUser(null)
+          setUserRole(null)
+          return
+        }
+
+        const profileData = await loadUserProfile(sessionUser)
+        setUser(profileData.user)
+        setUserRole(profileData.role)
+        persistUser(profileData.user)
+      } catch {
+        setUser(null)
+        setUserRole(null)
+      } finally {
+        setLoadingSession(false)
+      }
     }
 
     loadSession().catch(() => {})
@@ -135,12 +181,12 @@ function App() {
 
             if (error) throw error
 
-            const userData = { email: data?.user?.email || formData.email }
-            setUser(userData)
-            persistUser(userData)
+            const profileData = await loadUserProfile(data.user)
+            setUser(profileData.user)
+            setUserRole(profileData.role)
+            persistUser(profileData.user)
             setMessage('Inicio de sesión correcto.')
             setIsSuccess(true)
-            setActiveSection('inicio')
             return
           }
 
@@ -189,7 +235,6 @@ function App() {
           persistUser(userData)
           setMessage('Inicio de sesión correcto.')
           setIsSuccess(true)
-          setActiveSection('inicio')
           return
         }
 
@@ -223,7 +268,6 @@ function App() {
       persistUser(userData)
       setMessage('Registro correcto. Ya puedes usar la aplicación.')
       setIsSuccess(true)
-      setActiveSection('inicio')
     } catch (error) {
       setMessage(error.message || 'No se pudo completar la operación.')
     } finally {
@@ -237,7 +281,7 @@ function App() {
     }
 
     localStorage.removeItem(localUserKey)
-    clearUserRole()
+    clearLocalUserRole()
     setUser(null)
     setUserRole(null)
     setIsLogin(true)
@@ -247,12 +291,28 @@ function App() {
 
   const handleRoleSelect = (role) => {
     setUserRole(role)
-    saveUserRole(role)
+    saveLocalUserRole(role)
   }
 
   const handleChangeRole = () => {
-    clearUserRole()
+    clearLocalUserRole()
     setUserRole(null)
+  }
+
+  const handleBackToRoleSelector = () => {
+    handleChangeRole()
+  }
+
+  const handleBackToLogin = () => {
+    setUser(null)
+    setUserRole(null)
+    setIsLogin(true)
+    clearLocalUserRole()
+    localStorage.removeItem(localUserKey)
+  }
+
+  if (loadingSession) {
+    return <div className="auth-shell">Cargando sesión...</div>
   }
 
   if (!user) {
@@ -349,22 +409,32 @@ function App() {
     )
   }
 
-  // Mostrar selector de rol si el usuario está autenticado pero no ha seleccionado rol
+  // El selector solo se usa cuando la app funciona en modo demo local.
   if (!userRole) {
     return (
       <>
         <RoleSelector onRoleSelect={handleRoleSelect} selectedRole={userRole} />
+        <div style={{ textAlign: 'center', marginTop: '16px' }}>
+          <button
+            type="button"
+            className="btn btn-outline-secondary"
+            onClick={handleBackToLogin}
+          >
+            Regresar
+          </button>
+        </div>
       </>
     )
   }
 
   // Mostrar dashboard del usuario con su rol seleccionado
   return (
-    <Dashboard 
-      user={user} 
-      userRole={userRole} 
+    <Dashboard
+      user={user}
+      userRole={userRole}
       onLogout={handleLogout}
       onChangeRole={handleChangeRole}
+      onBackToRoleSelector={handleBackToRoleSelector}
     />
   )
 }

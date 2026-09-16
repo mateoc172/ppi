@@ -2,7 +2,7 @@ import { getRoleInfo } from '../config/roleConfig'
 import '../styles/Header.css'
 
 /**
- * Muestra la identidad de la sesion, el rol activo y la accion de cierre.
+ * Muestra la identidad de la sesion, el rol activo y las acciones del encabezado.
  *
  * @param {Object} props Propiedades del encabezado.
  * @param {Object} props.user Usuario autenticado, si existe.
@@ -10,9 +10,10 @@ import '../styles/Header.css'
  * @param {string} [props.userEmail] Correo alternativo para compatibilidad.
  * @param {() => void} props.onLogout Funcion ejecutada al cerrar sesion.
  * @param {() => void} [props.onChangeRole] Funcion para volver al selector de rol.
+ * @param {() => void} [props.onBackToRoleSelector] Funcion para volver a la seleccion de roles.
  * @returns {JSX.Element} Encabezado de la aplicacion.
  */
-function Header({ user, userRole, userEmail, onLogout, onChangeRole }) {
+function Header({ user, userRole, userEmail, onLogout, onChangeRole, onBackToRoleSelector }) {
   const roleInfo = userRole ? getRoleInfo(userRole) : null
   const email = user?.email || userEmail
 
@@ -31,9 +32,15 @@ function Header({ user, userRole, userEmail, onLogout, onChangeRole }) {
         )}
       </div>
       <div className="header-actions">
-        <button type="button" className="btn btn-back" onClick={onChangeRole}>
-          Regresar
-        </button>
+        {(onChangeRole || onBackToRoleSelector) && (
+          <button
+            type="button"
+            className="btn btn-back"
+            onClick={onChangeRole || onBackToRoleSelector}
+          >
+            Regresar
+          </button>
+        )}
         <button type="button" className="btn btn-gradient" onClick={onLogout}>
           Cerrar sesión
         </button>
