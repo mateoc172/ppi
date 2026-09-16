@@ -518,3 +518,58 @@
     flex-direction: column;
   }
 }
+
+@media (max-width: 600px) {
+  .auth-shell {
+    padding: 16px;
+  }
+
+  .auth-card {
+    padding: 22px 16px;
+    border-radius: 20px;
+  }
+
+  .auth-title {
+    font-size: 1.4rem;
+  }
+
+  .auth-toggle {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell {
+    padding: 12px;
+  }
+
+  .app-header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px 18px;
+  }
+
+  .header-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .header-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .header-actions .btn,
+  .header-actions button,
+  .btn-back,
+  .btn-gradient {
+    width: 100%;
+  }
+
+  .section-card {
+    padding: 18px 16px;
+  }
+
+  .image-panel__gallery {
+    grid-template-columns: 1fr;
+  }
+}
