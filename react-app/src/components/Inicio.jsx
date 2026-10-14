@@ -42,9 +42,9 @@ export default function Inicio({ userRole, user }) {
     },
     padre: {
       titulo: '¡Hola Padre de Familia!',
-      descripcion: 'Sigue el progreso académico de tu hijo/a.',
+      descripcion: 'Sigue el progreso de horas de servicio social de tu hijo/a.',
       features: [
-        { titulo: 'Progreso de mi Hijo', descripcion: 'Revisa las calificaciones y reportes', icon: '📊' },
+        { titulo: 'Horas de mi Hijo', descripcion: 'Consulta las horas aprobadas y actividades realizadas', icon: '📊' },
         { titulo: 'Evidencias', descripcion: 'Consulta las actividades y entregas', icon: '📋' },
         { titulo: 'Comunicación', descripcion: 'Contacta con los profesores', icon: '💬' },
       ],

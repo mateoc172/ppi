@@ -55,11 +55,9 @@ const datosDirectivo = [
   { id: 3, departamento: 'Cultural', estudiantes: 60, aprobados: 58 },
 ]
 
-const datosPadre = [
-  { id: 1, materia: 'Matemáticas', calificacion: 4.5, observaciones: 'Excelente rendimiento' },
-  { id: 2, materia: 'Lenguaje', calificacion: 4.2, observaciones: 'Muy bien, sigue así' },
-  { id: 3, materia: 'Ciencias', calificacion: 3.8, observaciones: 'Necesita refuerzo' },
-]
+const datosPadre = datosEstudiante
+  .filter((item) => item.estado === 'Aprobado')
+  .map(({ id, fecha, horas, actividad }) => ({ id, fecha, horas, actividad }))
 
 /**
  * Muestra reportes y resumenes calculados de acuerdo con el rol del usuario.
@@ -169,18 +167,18 @@ export default function Reportes({ userRole, user }) {
       ),
     },
     padre: {
-      titulo: 'Reportes de mi Hijo/a',
-      descripcion: 'Seguimiento del desempeño académico',
+      titulo: 'Horas de mi Hijo/a',
+      descripcion: 'Seguimiento de las horas de servicio social aprobadas',
       datos: datosPadre,
-      columnas: ['materia', 'calificacion', 'observaciones'],
+      columnas: ['fecha', 'horas', 'actividad'],
       renderItem: (item) => (
         <article key={item.id} className="report-card">
           <div className="report-header">
-            <h3>📖 {item.materia}</h3>
-            <span className="status-badge status-completado">{item.calificacion}/5.0</span>
+            <h3>📅 {item.fecha}</h3>
+            <span className="status-badge status-completado">{item.horas} hrs</span>
           </div>
           <div className="report-body">
-            <p><strong>Observaciones:</strong> {item.observaciones}</p>
+            <p><strong>Actividad:</strong> {item.actividad}</p>
           </div>
         </article>
       ),
@@ -206,6 +204,10 @@ export default function Reportes({ userRole, user }) {
     ? ((horasAprobadas + horasRechazadas) / horasDistribuidas) * 100
     : 0
   const porcentajeCompleto = userRole === 'estudiante' ? (horasAprobadas / 80) * 100 : 0
+  const horasAcumuladasHijo = userRole === 'padre'
+    ? reporte.datos.reduce((total, item) => total + item.horas, 0)
+    : 0
+  const porcentajeHorasHijo = Math.min((horasAcumuladasHijo / 80) * 100, 100)
 
   return (
     <section className="section-card reportes-section">
@@ -217,13 +219,18 @@ export default function Reportes({ userRole, user }) {
         )}
       </div>
 
-      {userRole === 'estudiante' && (
+      {(userRole === 'estudiante' || userRole === 'padre') && (
         <div className="progress-container">
           <div className="progress-bar">
-            <div className="progress-fill" style={{ width: `${porcentajeCompleto}%` }}></div>
+            <div
+              className="progress-fill"
+              style={{ width: `${userRole === 'estudiante' ? porcentajeCompleto : porcentajeHorasHijo}%` }}
+            ></div>
           </div>
           <div className="progress-info">
-            <span className="progress-current">{horasAprobadas} horas</span>
+            <span className="progress-current">
+              {userRole === 'estudiante' ? horasAprobadas : horasAcumuladasHijo} horas
+            </span>
             <span className="progress-total">de 80 horas requeridas</span>
           </div>
         </div>
@@ -275,6 +282,23 @@ export default function Reportes({ userRole, user }) {
               <div>
                 <p className="stat-label">Horas Faltantes</p>
                 <p className="stat-value">{horasFaltantes} hrs</p>
+              </div>
+            </div>
+          </>
+        ) : userRole === 'padre' ? (
+          <>
+            <div className="summary-stat status-completado">
+              <span className="stat-icon">⏱️</span>
+              <div>
+                <p className="stat-label">Horas acumuladas</p>
+                <p className="stat-value">{horasAcumuladasHijo} hrs</p>
+              </div>
+            </div>
+            <div className="summary-stat status-pendiente">
+              <span className="stat-icon">📌</span>
+              <div>
+                <p className="stat-label">Horas faltantes</p>
+                <p className="stat-value">{Math.max(0, 80 - horasAcumuladasHijo)} hrs</p>
               </div>
             </div>
           </>

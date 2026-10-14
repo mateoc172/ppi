@@ -83,6 +83,25 @@ npm run build
 npm run preview
 ```
 
+## Publicar en GitHub Pages
+
+El workflow `.github/workflows/deploy.yml` compila `react-app` y publica el sitio al
+hacer push a `main`. Vite usa `/ppi/` como ruta base en GitHub Actions, que
+corresponde al nombre de este repositorio, y conserva `/` para el desarrollo local.
+La aplicación cambia entre secciones dentro de React y no usa rutas en la URL, por
+lo que no necesita `HashRouter` ni un archivo `404.html` para rutas internas.
+
+Antes del primer despliegue:
+
+1. En GitHub, abre **Settings → Pages** y selecciona **GitHub Actions** como origen.
+2. En **Settings → Secrets and variables → Actions**, agrega `VITE_SUPABASE_URL` y
+   `VITE_SUPABASE_ANON_KEY` con los valores de tu proyecto Supabase.
+3. Haz push de los cambios a `main` y revisa la ejecución en **Actions**.
+
+La URL esperada para este repositorio es
+`https://mateoc172.github.io/ppi/`. La clave `anon` se incluye en el cliente web;
+protege los datos con políticas RLS y nunca agregues una clave `service_role`.
+
 ### Ejecutar el linter
 
 ```bash

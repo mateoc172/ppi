@@ -84,10 +84,9 @@ export const ROLE_PERMISSIONS = {
       registrarHoras: false,
       verUsuarios: false,
       editarUsuarios: false,
-      verCalificaciones: true,
       contactarProfesor: true,
     },
-    description: 'Acceso al progreso de tu hijo/a'
+    description: 'Acceso al progreso de horas y actividades de tu hijo/a'
   },
 }
 
